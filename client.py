@@ -6,6 +6,10 @@ from pygame.locals import *
 
 
 class GameX(ConnectionListener):
+
+    # player variable
+    play = 0
+
     def __init__(self):
         pygame.init()
         size = width, height = 600, 600
@@ -19,13 +23,15 @@ class GameX(ConnectionListener):
         self.players.append(Player(pygame.image.load("player1.png")))
         self.players.append(Player(pygame.image.load("player2.png")))
         self.players[1].rect.x = width - self.players[1].rect.width
+        # print(self.players[1].rect.x)
 
         # ball display
         self.ball = Ball(pygame.image.load("ball.png"))
-        # self.ball = pygame.transform.scale(self.ball.img, (50, 50))
-        self.ball.rect.x = width/2
-        self.ball.rect.y = height/2
-
+        self.ball.rect.x = width/3
+        self.ball.rect.y = height/4 + height/2
+        self.positiveX = 1
+        self.positiveY = 1
+        self.ball.out = 0
 
         self.gameID = None
         self.player = None
@@ -58,8 +64,36 @@ class GameX(ConnectionListener):
             self.players[self.player].rect.y += self.velocity
             self.Send({"action": "move", "x": 0, "y": +self.velocity, "player": self.player, "gameID": self.gameID})
 
-    def send_ball_once(self):
-       self.Send({"action": "moveBall", "x": self.ball.rect.x, "y": self.ball.rect.y, "player": self.player, "gameID": self.gameID})
+    def send_ball(self):
+
+        # variable to recognise player
+        global play
+
+        if self.ball.rect.x >= 600 or self.ball.rect.x <= -100:
+            self.ball.out = 1
+        if self.ball.rect.y >= 500:
+            self.positiveY = 0
+        if self.ball.rect.y <= 0:
+            self.positiveY = 1
+
+        # player contact
+
+        if self.ball.rect.x == self.players[1].rect.x - 90: # -10 to look good
+            print("in player 1 " + str(self.ball.rect.y) + " " + str(self.players[1].rect.y))
+            # if self.ball.rect.y >= self.players[1].rect.y-20 and self.ball.rect.y <= self.players[1].rect.y + 20
+            if self.players[1].rect.y - 100 <= self.ball.rect.y <= self.players[1].rect.y + 100:
+                print("Contact")
+                self.play = 1
+
+        if self.ball.rect.x == self.players[0].rect.x :
+            print("in player 0")
+            if self.players[0].rect.y - 100 <= self.ball.rect.y <= self.players[0].rect.y + 100:
+                print("Contact")
+                self.play = 0
+
+        # print(self.play)
+        # print(play)
+        self.Send({"action": "moveBall", "x": self.ball.rect.x, "y": self.ball.rect.y, "player": self.player, "gameID": self.gameID, "out": self.ball.out, "positiveY": self.positiveY, "play": self.play})
 
     def update(self):
 
@@ -69,7 +103,9 @@ class GameX(ConnectionListener):
         self.check_exit()
 
         self.get_keys()
-        self.send_ball_once()
+
+        # asking for ball update
+        self.send_ball()
 
         self.clock.tick(60)
 
@@ -87,6 +123,8 @@ class GameX(ConnectionListener):
         self.player = data['player']
         self.running = True
         self.velocity = data['velocity']
+        w, h = pygame.display.get_surface().get_size()
+        #print(str(w)+" "+str(h))
 
     def Network_position(self, data):
         p = data['player']
@@ -117,9 +155,14 @@ class Ball(object):
         self.dir_x = 1
         self.dir_y = 1
 
+        # Consider Top Left as (0,0)
+        self.positiveX = 1
+        self.positiveY = 1
+
+        self.out = 0
 
 if __name__ == "__main__":
     og = GameX()
-
+    print("Asdasd")
     while True:
         og.update()

@@ -1,5 +1,6 @@
 from PodSixNet.Channel import Channel
 from PodSixNet.Server import Server
+import time
 
 from time import sleep
 
@@ -20,16 +21,17 @@ class ClientChannel(Channel):
         player = data['player']
         ball_x = data['x']
         ball_y = data['y']
-        # dif_x = 2
-        # dif_y = 2
+        out = data['out']
+        positiveY = data['positiveY']
+        play = data['play']
+        dif_x = 2
+        dif_y = 2
 
-        self._server.ball(ball_x, ball_y, gameID, player)
+        self._server.ball(ball_x, ball_y, gameID, out, positiveY, play)
 
 
 class GameServer(Server):
     channelClass = ClientChannel
-    dif_x = 2
-    dif_y = 2
 
     def __init__(self, *args, **kwargs):
         Server.__init__(self, *args, **kwargs)
@@ -60,7 +62,7 @@ class GameServer(Server):
             self.games.append(self.queue)
             self.queue = None
             self.gameIndex += 1
-
+            time.sleep(2)
 
     def move_player(self, x, y, gameId, player):
 
@@ -71,32 +73,29 @@ class GameServer(Server):
             if not i == player:
                 g.player_channels[i].Send({"action": "position", "player": player, "x": g.players[player].x, "y": g.players[player].y})
 
-            # g.player_channels[i].Send({"action":"ball", "player":player, "ball_x":ball.x, "ball_y":ball.y})
+    # function to move ball on screen
+    def ball(self, ball_x, ball_y, gameID, out, positiveY, play):
 
-    #function to move ball on screen
-    def ball(self, ball_x, ball_y, gameID, player):
-        dif_x = 2
-        dif_y = 2
+        if out == 1:
+            print("Out of bound")
+            print(play)
+            # s.close()
+        else:
+            if play == 0:
+                ball_x += 2
+            if play == 1:
+                ball_x -= 2
+
+            if positiveY == 1:
+                ball_y += 2
+            if positiveY == 0:
+                ball_y -= 2
+                print(ball_x, ball_y)
+
         g = self.games[gameID]
 
         # hardcoding width height of 600, 600
-        if ball_x >= 500:
-            ball_x = 450
-            dif_x *= -1
 
-        if ball_x <= 0:
-            dif_x *= -1
-
-        if ball_y >= 500:
-            dif_y *= -1
-
-        if ball_y <= 0:
-            dif_y *= 1
-
-        ball_x += dif_x
-        ball_y += dif_y
-
-        print(ball_x, ball_y)
         sleep(0.0001)
 
         for i in range(0, len(g.player_channels)):
