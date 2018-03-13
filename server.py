@@ -78,7 +78,7 @@ class GameServer(Server):
 
         if out == 1:
             print("Out of bound")
-            print(play)
+            # print(play)
             # s.close()
         else:
             if play == 0:
@@ -90,7 +90,7 @@ class GameServer(Server):
                 ball_y += 2
             if positiveY == 0:
                 ball_y -= 2
-                print(ball_x, ball_y)
+                # print(ball_x, ball_y)
 
         g = self.games[gameID]
 
@@ -128,7 +128,15 @@ class Player(object):
 if __name__ == "__main__":
     print("Server starting ")
 
-    s = GameServer()
+    # s = GameServer()
+    address, port = raw_input("Host:Port (localhost:8000): ")
+
+    if not address:
+        host, port = "localhost", 8000
+    else:
+        host, port = address.split(":")
+
+    s = GameServer(localaddr=(host, int(port)))
 
     while True:
         s.Pump()

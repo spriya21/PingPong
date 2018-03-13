@@ -40,7 +40,20 @@ class GameX(ConnectionListener):
 
         self.screen.fill(self.bg)
 
-        self.Connect()
+        # self.Connect()
+        # Trying multi PC
+        address = raw_input('Address os server: ')
+        try:
+            if not address:
+                host, port = "localhost", 8000
+            else:
+                host, port = address.split(":")
+            self.Connect((host, int(port)))
+        except:
+            print("Error Connecting to server")
+            exit()
+
+        print("Connection Done")
 
         self.running = False
 
@@ -161,8 +174,9 @@ class Ball(object):
 
         self.out = 0
 
+
 if __name__ == "__main__":
     og = GameX()
-    print("Asdasd")
+    # print("Asdasd")
     while True:
         og.update()
