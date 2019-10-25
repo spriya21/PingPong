@@ -4,16 +4,15 @@ Classic Ping-Pong game with multiplayer functionality playable in LAN connected 
 ## Prerequisite
 Packages Required:</br>
 1. Python 2: [link](https://www.python.org/downloads/)</br>
-2. PodSixNet </br>
+2. PodSixNet
 ```
 pip install PodSixNet
 ```
-</br>
-3. pygame</br>
+3. pygame
 ```
 sudo apt-get install python-pygame
 ```
-</br>
+
 ## Run the program
 Run the server program in one system and client in another </br>
 ```
@@ -23,4 +22,4 @@ python2 server.py
 Enter Port number e.g. 8000
 
 ## Author
-Roshan 
+Roshan
