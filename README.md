@@ -13,3 +13,5 @@ Run the server program in one system and client in another </br>
 Enter Port number e.g. 8000
 ## Author
 Roshan 
+## About
+Table tennis, also known as ping-pong, is a sport in which two or four players hit a lightweight ball back and forth across a table using small rackets.
